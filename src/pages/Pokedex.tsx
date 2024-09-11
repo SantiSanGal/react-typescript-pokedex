@@ -7,9 +7,10 @@ import { useState } from 'react';
 import { SelectTypes } from '../components/Pokedex/SelectTypes';
 
 export const Pokedex = () => {
+  const [type, setType] = useState('allpokemons');
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
-  const { data: pokemons, isLoading } = useGetPokemonsQuery(page - 1);
+  const { data: pokemons, isLoading } = useGetPokemonsQuery({ page: page - 1, type });
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -22,14 +23,10 @@ export const Pokedex = () => {
     setPage(value);
   };
 
-
-  // const handleNextPage = () => {
-  //   setPage((prevPage) => prevPage + 1);
-  // };
-
-  // const handlePrevPage = () => {
-  //   setPage((prevPage) => prevPage - 1);
-  // };
+  const handleTypeChange = (selectedType: string) => {
+    setType(selectedType);
+    setPage(1);
+  };
 
   return (
     <div className={style.pokedex}>
@@ -38,7 +35,7 @@ export const Pokedex = () => {
           <input className={style.pokedexContainerFormInput} id='pokemon' type="text" />
           <button className={style.pokedexContainerFormBtn}>Search</button>
         </form>
-        <SelectTypes/>
+        <SelectTypes onTypeChange={handleTypeChange} />
       </div>
 
       {
@@ -53,27 +50,17 @@ export const Pokedex = () => {
                 ))}
               </div>
 
-              <div className={style.paginatorContainer}>
-
-                {/* <button onClick={handlePrevPage}>Prev Page</button>
-                <button onClick={handleNextPage}>Next Page</button> */}
-
-                <Pagination
-                  count={Math.ceil(pokemons.count / 10)}
-                  page={page}
-                  onChange={handleChangePage}
-                // sx={{
-                //   '& .MuiPaginationItem-root': {
-                //     color: '#FE1936',
-                //   },
-                //   '& .Mui-selected': {
-                //     backgroundColor: '#FE1936',
-                //     color: '#FFFFFF',
-                //   }
-                // }}
-                />
-
-              </div>
+              {
+                type == 'allpokemons' && (
+                  <div className={style.paginatorContainer}>
+                    <Pagination
+                      count={Math.ceil(pokemons.count / 10)}
+                      page={page}
+                      onChange={handleChangePage}
+                    />
+                  </div>
+                )
+              }
             </div>
           )
         )
